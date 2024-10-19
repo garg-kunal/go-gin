@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Go Gin 2.0 - {{ .title }}</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ template "header.html" .}}
+    <p class="p-4">{{ .content }}</p>
+    {{ if eq .title "Home Page.." }}
+     <p class="p-4 bg-red-100">Home Page if</p>
+    {{ else if eq .title "Home Page" }}
+     <p class="p-4 bg-red-600">Home Page else if</p>
+    {{ else }}
+    <p class="p-4 bg-red-400">Home Page else</p>
+    {{ end }}
+
+    <ul class="p-4 bg-blue-100">
+      {{ range .titles }}
+      <li class="p-2">{{ . }} </li>
+      {{ end }}
+    </ul>
+    {{ template "footer.html" .}}
+  </body>
+</html>

@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>Go Gin 2.0 - {{ .title }}</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ template "header.html" .}}
+    <p class="p-4">{{ .content }}</p>
+    {{ template "footer.html" .}}
+  </body>
+</html>
