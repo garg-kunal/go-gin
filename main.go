@@ -53,10 +53,6 @@ func main() {
 		})
 	})
 
-	router.GET("/register", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "register.html", nil)
-	})
-
 	
 
 	// router.GET("/me/:id/:newId", func(c *gin.Context) {
