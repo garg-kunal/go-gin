@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Go Gin 2.0 - Register Page</title>
+    <title>Go Gin 2.0 - Login Page</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,11 +33,11 @@
             <h1
               class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
             >
-              Sign up to your account
+              Sign in to your account
             </h1>
             <form
               class="space-y-4 md:space-y-6"
-              action="/auth/register"
+              action="/auth/login"
               method="post"
               name="registerForm"
             >
@@ -72,18 +72,27 @@
                   required=""
                 />
               </div>
+              <!-- <div class="flex items-center justify-between">
+                <div class="flex items-start"></div>
+                <a
+                  href="#"
+                  class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+                >
+                  Sign In?</a
+                >
+              </div> -->
               <button
                 type="submit"
                 class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Register
+                Login
               </button>
               <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?
+                Don’t have an account yet?
                 <a
-                  href="/auth/login"
+                  href="/auth/register"
                   class="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                  >Sign In</a
+                  >Sign up</a
                 >
               </p>
             </form>

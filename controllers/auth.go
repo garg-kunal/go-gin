@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"go-tutorial/internal/middleware"
 	"go-tutorial/internal/utils"
 	"go-tutorial/services"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +23,24 @@ func InitAuthController(authService *services.AuthService) *AuthController {
 
 func (a *AuthController) InitRoutes(router *gin.Engine) {
 	routes := router.Group("/auth")
+	routes.Use(middleware.CheckAuthMiddleware)
 	routes.POST("/login", a.Login())
 	routes.POST("/register", a.Register())
 	routes.GET("/register", func(c *gin.Context) {
+		value, exists := c.Get("isLoggedIn")
+		if exists && value == true {
+			c.Redirect(http.StatusMovedPermanently, "/home")
+			return
+		}
 		c.HTML(http.StatusOK, "register.html", nil)
+	})
+	routes.GET("/login", func(c *gin.Context) {
+		value, exists := c.Get("isLoggedIn")
+		if exists && value == true {
+			c.Redirect(http.StatusMovedPermanently, "/home")
+			return
+		}
+		c.HTML(http.StatusOK, "login.html", nil)
 	})
 }
 
@@ -59,13 +75,12 @@ func (a *AuthController) Register() gin.HandlerFunc {
 		_, err := a.authService.Register(&registerBody.Email, &registerBody.Password)
 		if err != nil {
 			c.HTML(http.StatusOK, "register.html", gin.H{
-				"errMessage":  err.Error(),
+				"errMessage": err.Error(),
 			})
 			return
 		}
 
-		c.HTML(http.StatusOK, "index.html", nil)
-		return
+		c.Redirect(http.StatusMovedPermanently, "/auth/login")
 	}
 }
 
@@ -74,19 +89,24 @@ func (a *AuthController) Login() gin.HandlerFunc {
 		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required,min=8,max=255"`
 	}
+	type RegisterBodyForm struct {
+		Email    string `form:"email" binding:"required"`
+		Password string `form:"password" binding:"required,min=8,max=255"`
+	}
 	return func(c *gin.Context) {
-		var registerBody RegisterBody
-		if err := c.ShouldBindJSON(&registerBody); err != nil {
-			c.JSON(404, gin.H{
-				"message": err.Error(),
+		var registerBody RegisterBodyForm
+		if err := c.ShouldBind(&registerBody); err != nil {
+			errStr := utils.ValidateFields(c, err, "Email", "Password")
+			c.HTML(http.StatusOK, "login.html", gin.H{
+				"errMessage": errStr,
 			})
 			return
 		}
 		fmt.Print(registerBody)
 		user, err := a.authService.Login(&registerBody.Email, &registerBody.Password)
 		if err != nil {
-			c.JSON(404, gin.H{
-				"error": err.Error(),
+			c.HTML(http.StatusBadRequest, "login.html", gin.H{
+				"errMessage": err.Error(),
 			})
 			return
 		}
@@ -94,16 +114,14 @@ func (a *AuthController) Login() gin.HandlerFunc {
 		var token string
 		token, err = utils.GenerateToken(user.Email, user.Id)
 		if err != nil {
-			c.JSON(404, gin.H{
-				"error": err.Error(),
+			c.HTML(404, "login.html", gin.H{
+				"errMessage": err.Error(),
 			})
 			return
 		}
 
-		c.JSON(200, gin.H{
-			"message": user,
-			"token":   token,
-		})
-		return
+		c.SetSameSite(http.SameSiteNoneMode)
+		c.SetCookie("userToken", token, int(time.Now().Add(time.Hour*24).Unix()), "", "", true, false)
+		c.Redirect(http.StatusMovedPermanently, "/home")
 	}
 }

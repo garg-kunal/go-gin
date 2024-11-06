@@ -3,6 +3,7 @@ package main
 import (
 	"go-tutorial/controllers"
 	internal "go-tutorial/internal/database"
+	"go-tutorial/internal/middleware"
 	"go-tutorial/services"
 	"net/http"
 
@@ -37,7 +38,7 @@ func main() {
 		})
 	})
 
-	router.GET("/home", func(c *gin.Context) {
+	router.GET("/home", middleware.CheckAuthMiddleware, func(c *gin.Context) {
 		titles := []string{"Hi", "All", "Bye"}
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":   "Home Page",
@@ -52,8 +53,6 @@ func main() {
 			"content": "This is a About Page of Go Gin 2.0",
 		})
 	})
-
-	
 
 	// router.GET("/me/:id/:newId", func(c *gin.Context) {
 	//   var id=c.Param("id")
