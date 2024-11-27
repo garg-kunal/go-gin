@@ -47,6 +47,7 @@ func CheckMiddleware(c *gin.Context) {
 func CheckAuthMiddleware(c *gin.Context) {
 
 	token, err := c.Request.Cookie("userToken")
+	print("token", token)
 	if err != nil || token == nil || token.Value == "" {
 		if c.Request.URL.Path == "/auth/login" || c.Request.URL.Path == "/auth/register" {
 			c.Next()

@@ -2,9 +2,12 @@ package controllers
 
 import (
 	"go-tutorial/internal/middleware"
-	"strconv"
-	"github.com/gin-gonic/gin"
+	"go-tutorial/internal/utils"
 	"go-tutorial/services"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type NotesController struct {
@@ -18,12 +21,15 @@ func (n *NotesController) InitController(notesService services.NotesService) *No
 
 func (n *NotesController) InitRoutes(router *gin.Engine){
 	notes:=router.Group("/notes")
-	notes.Use(middleware.CheckMiddleware)
+	notes.Use(middleware.CheckAuthMiddleware)
 	notes.GET("/", n.GetNotes())
 	notes.GET("/:id", n.GetNote())
     notes.POST("/", n.CreateNotes())
 	notes.PUT("/", n.UpdateNotes())
 	notes.DELETE("/:id", n.DeleteNotes())
+	notes.GET("/notes", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "note.html", nil)
+	})
 }
 
 func (n *NotesController) GetNotes() gin.HandlerFunc{
@@ -61,11 +67,16 @@ func (n *NotesController) CreateNotes() gin.HandlerFunc{
 		Title string `json:"title" binding:"required"`
 		Status bool `json:"status"`
 	}
+	type NoteBodyForm struct{
+		Title string `form:"title" binding:"required"`
+		Status bool `form:"status"`
+	}
 	return func(c *gin.Context){
-		var noteBody NoteBody
-		if err:=c.BindJSON(&noteBody); err!=nil{
-			c.JSON(400,gin.H{
-				"message":err.Error(),
+		var noteBody NoteBodyForm
+		if err:=c.ShouldBind(&noteBody); err!=nil{
+			errStr := utils.ValidateFields(c, err, "Title", "Status")
+			c.HTML(http.StatusOK, "note.html", gin.H{
+				"errMessage": errStr,
 			})
 			return 
 		}
