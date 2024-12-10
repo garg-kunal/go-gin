@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Go Gin 2.0 - Update Title</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ template "header.html" . }} {{ if .errMessage }}
+    <section class="bg-gray-50 dark:bg-gray-900">
+      <p class="text-xl text-red-900 flex justify-center">{{ .errMessage }}</p>
+      {{ end }}
+
+      <div class="max-w-md mx-auto p-8 mt-4 shadow-lg rounded">
+        <h2 class="text-2xl font-bold text-center mb-4">Update Note Title</h2>
+
+        <form action="/notes/update-note/{{ .note.Id }}" method="post">
+          <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-700"
+              >New Title</label
+            >
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value="{{ .note.Title }}"
+              class="mt-1 p-2 border border-gray-300 rounded w-full"
+              required
+            />
+          </div>
+
+          <div class="flex justify-center">
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700"
+            >
+              Update Title
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+    {{ template "footer.html" . }}
+  </body>
+</html>
