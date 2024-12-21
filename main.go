@@ -38,13 +38,19 @@ func main() {
 		})
 	})
 
+	router.GET("/", middleware.CheckAuthMiddleware, func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/notes/note-ui")
+	})
+
 	router.GET("/home", middleware.CheckAuthMiddleware, func(c *gin.Context) {
-		titles := []string{"Hi", "All", "Bye"}
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"title":   "Home Page",
-			"content": "This is a Home Page of Go Gin 2.0",
-			"titles":  titles,
-		})
+		// titles := []string{"Hi", "All", "Bye"}
+		// c.HTML(http.StatusOK, "index.html", gin.H{
+		// 	"title":   "Home Page",
+		// 	"content": "This is a Home Page of Go Gin 2.0",
+		// 	"titles":  titles,
+		// })
+
+		c.Redirect(http.StatusMovedPermanently, "/notes/note-ui")
 	})
 
 	router.GET("/about", func(c *gin.Context) {
