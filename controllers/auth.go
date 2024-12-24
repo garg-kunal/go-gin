@@ -25,6 +25,7 @@ func (a *AuthController) InitRoutes(router *gin.Engine) {
 	routes := router.Group("/auth")
 	routes.Use(middleware.CheckAuthMiddleware)
 	routes.POST("/login", a.Login())
+	routes.GET("/logout", a.Logout())
 	routes.POST("/register", a.Register())
 	routes.GET("/register", func(c *gin.Context) {
 		value, exists := c.Get("isLoggedIn")
@@ -123,5 +124,13 @@ func (a *AuthController) Login() gin.HandlerFunc {
 		c.SetSameSite(http.SameSiteNoneMode)
 		c.SetCookie("userToken", token, int(time.Now().Add(time.Hour*24).Unix()), "", "", true, false)
 		c.Redirect(http.StatusMovedPermanently, "/home")
+	}
+}
+
+func (a *AuthController) Logout() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.SetSameSite(http.SameSiteNoneMode)
+		c.SetCookie("userToken", "", -1, "", "", true, false)
+		c.Redirect(http.StatusMovedPermanently, "/auth/login")
 	}
 }
