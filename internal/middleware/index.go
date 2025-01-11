@@ -76,6 +76,7 @@ func CheckAuthMiddleware(c *gin.Context) {
 	}
 
 	c.Set("isLoggedIn", true)
+	c.Set("User", data)
 	c.Next()
 
 }

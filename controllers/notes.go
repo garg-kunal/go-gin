@@ -51,7 +51,18 @@ func (n *NotesController) GetNotesUI() gin.HandlerFunc {
 			}
 		}
 
-		notes, err := n.notesService.GetNotesService(actualStatus)
+		user, error := utils.GetUserDataFromToken(c)
+
+		if error != nil {
+			c.HTML(http.StatusOK, "notes-ui.html", gin.H{
+				"errMessage": error.Error(),
+			})
+			return
+		}
+
+		userId := user.Id
+
+		notes, err := n.notesService.GetNotesService(actualStatus, userId)
 
 		if err != nil {
 			// c.JSON(400,gin.H{
@@ -87,7 +98,7 @@ func (n *NotesController) GetNotes() gin.HandlerFunc {
 			}
 		}
 
-		notes, err := n.notesService.GetNotesService(actualStatus)
+		notes, err := n.notesService.GetNotesService(actualStatus, 0)
 
 		if err != nil {
 			c.JSON(400, gin.H{
@@ -120,7 +131,18 @@ func (n *NotesController) CreateNotes() gin.HandlerFunc {
 			return
 		}
 
-		_, err := n.notesService.CreateNotesService(noteBody.Title, noteBody.Status)
+		user, error := utils.GetUserDataFromToken(c)
+
+		if error != nil {
+			c.HTML(http.StatusOK, "note.html", gin.H{
+				"errMessage": error.Error(),
+			})
+			return
+		}
+
+		userId := user.Id
+
+		_, err := n.notesService.CreateNotesService(noteBody.Title, noteBody.Status, userId)
 		if err != nil {
 			// c.JSON(404,gin.H{
 			// 	"message":err.Error(),
